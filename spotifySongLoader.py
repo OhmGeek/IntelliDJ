@@ -14,3 +14,6 @@ class SpotifyLoader(object):
 		for item in data:
 			return_data.append(item['track']['id'])
 		return return_data
+		
+	def add_tracks_to_playlist(self,userID,playlistID,tracks):
+		self.spotify.user_playlist_add_tracks(userID,playlistID,tracks)
