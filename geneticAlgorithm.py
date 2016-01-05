@@ -75,7 +75,7 @@ class GeneticAlgorithm(object):
 			if(fitness[i] < fitness[firstMinIndex]):
 				secondMinIndex = firstMinIndex
 				firstMinIndex = i
-			elif(fitness[i] < fitness[secondMinIndex]):
+			if(fitness[i] < fitness[secondMinIndex] and fitness[i] >= fitness[firstMinIndex]):
 				secondMinIndex = i
 			i += 1
 		return [firstMinIndex,secondMinIndex]
@@ -88,7 +88,7 @@ class GeneticAlgorithm(object):
 			if(fitness[i] > fitness[firstMaxIndex]):
 				secondMaxIndex = firstMaxIndex
 				firstMaxIndex = i
-			elif(secondMaxIndex >= 0 and fitness[i] > fitness[secondMaxIndex]):
+			if(fitness[i] > fitness[secondMaxIndex] and fitness[i] <= fitness[firstMaxIndex]):
 				secondMaxIndex = i
 			i += 1
 		return [firstMaxIndex,secondMaxIndex]
