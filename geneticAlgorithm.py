@@ -7,8 +7,10 @@ class GeneticAlgorithm(object):
 	"""docstring for GeneticAlgorithm"""
 	def __init__(self, initialSize,songList,ENAPIKey):
 		self.population = []
-		self.getDataForSongs(songList,ENAPIKey)
-		self.generatePopulation(songList,initialSize)
+		self.songList = songList
+		self.getDataForSongs(self.songList,ENAPIKey)
+		self.generatePopulation(self.songList,initialSize)
+		print(self.population[0])
 		self.SortPopulation()
 		#tests
 		# print(self.population)
@@ -85,10 +87,19 @@ class GeneticAlgorithm(object):
 			self.population.append(child)
 
 	def getDataForSongs(self, songs, ENAPIKey):
+		songs2 = songs[0:]
 		self.songInfo = {}
 		fetcher = TrackFetcher(ENAPIKey)
 		for s in songs:
-			self.songInfo[s] = fetcher.getInfo("spotify:track:" + s)
+			info = fetcher.getInfo("spotify:track:" + s)
+			if(info is not None):
+				self.songInfo[s] = info
+				print(info)
+			else:
+				print(str(s) + " not found")
+				songs2.remove(s)
+		self.songList = songs2
+
 
 	def nextGeneration(self):
 		fitness = []
@@ -183,7 +194,8 @@ class GeneticAlgorithm(object):
 		for left in range(0,len(mix) - 1):
 			song1 = self.songInfo[mix[left]]
 			song2 = self.songInfo[mix[left+1]]
-
+			if(song1 is None or song2 is None):
+				return 999999999.99999
 			t = 0.0
 			for field in fieldsToCheck:
 				t += song1[field] * song2[field]
