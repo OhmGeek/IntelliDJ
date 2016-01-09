@@ -145,7 +145,7 @@ class GeneticAlgorithm(object):
 		if(random.randint(0,100) < 7):
 			i1 = random.randint(0,len(child1) - 1)
 			i2 = random.randint(0,len(child1) - 1)
-			child1[i1], child2[i2] = child2[i2], child1[i1]
+			child1[i1], child2[i2] = child1[i2], child2[i1]
 
 		
 		c1Fitness = self.fitnessFunction(child1)
@@ -162,33 +162,10 @@ class GeneticAlgorithm(object):
 		print(self.fitness) 
 	def getBestMix(self):
 		return self.population[0]
-	def getTwoMinFitnessIndices(self,fitness):
-		firstMinIndex = 0
-		secondMinIndex = 1
-		i = 1
-		while(i < len(fitness)):
-			if(fitness[i] < fitness[firstMinIndex]):
-				secondMinIndex = firstMinIndex
-				firstMinIndex = i
-			if(fitness[i] < fitness[secondMinIndex] and fitness[i] >= fitness[firstMinIndex]):
-				secondMinIndex = i
-			i += 1
-		return [firstMinIndex,secondMinIndex]
 
-	def getTwoMaxFitnessIndices(self,fitness):
-		firstMaxIndex = 0
-		secondMaxIndex = -1
-		i = 1
-		while(i < len(fitness)):
-			if(fitness[i] > fitness[firstMaxIndex]):
-				secondMaxIndex = firstMaxIndex
-				firstMaxIndex = i
-			if(fitness[i] > fitness[secondMaxIndex] and fitness[i] <= fitness[firstMaxIndex]):
-				secondMaxIndex = i
-			i += 1
-		return [firstMaxIndex,secondMaxIndex]
-
-	def fitnessFunction(self, mix):
+	#depreciated - the second one uses rms value, which works better than the cosine value.
+	#Change the function used in the fitnessFunction method if you want to use this instead.
+	def fitnessFunctionOne(self,mix):
 		score = 0.0
 		fieldsToCheck = ['danceability','energy','key','speechiness','tempo','time_signature','liveness','acousticness','mode']
 		for left in range(0,len(mix) - 1):
@@ -218,3 +195,21 @@ class GeneticAlgorithm(object):
 				t = t / (n1 * n2)
 			score += t
 		return score*1000
+
+	def fitnessFunctionTwo(self,mix):
+		score = 0
+		fieldsToCheck = ['danceability','energy','key','speechiness','tempo','time_signature','liveness','acousticness','mode']
+		for left in range(0,len(mix) - 1):
+			song1 = self.songInfo[mix[left]]
+			song2 = self.songInfo[mix[left+1]]
+			if(song1 is None or song2 is None):
+				return 999999999.99999
+			t = 0.0
+			for field in fieldsToCheck:
+				t += (song1[field] - song2[field]) ** 2
+			score += math.sqrt(t)
+		return score
+
+
+	def fitnessFunction(self, mi):
+		return self.fitnessFunctionTwo(mi)
